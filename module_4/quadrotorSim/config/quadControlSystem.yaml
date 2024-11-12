@@ -1,0 +1,47 @@
+# Файл конфигурации системы управления
+
+# Коэффициенты ПИД регулятора угловой скорости по оси X
+KpXAngularRate: 0
+KiXAngularRate: 0
+KdXAngularRate: 0
+# Коэффициенты ПИД регулятора угловой скорости по оси Y
+KpYAngularRate: 0
+KiYAngularRate: 0
+KdYAngularRate: 0
+# Коэффициенты ПИД регулятора угловой скорости по оси Z
+KpZAngularRate: 0
+KiZAngularRate: 0
+KdZAngularRate: 0
+# Коэффициенты ПИД регулятора углового положения по оси X
+KpXAngle: 0
+KiXAngle: 0
+KdXAngle: 0
+# Коэффициенты ПИД регулятора углового положения по оси Y
+KpYAngle: 0
+KiYAngle: 0
+KdYAngle: 0
+# Коэффициенты ПИД регулятора углового положения по оси Z
+KpZAngle: 0
+KiZAngle: 0
+KdZAngle: 0
+# Коэффициенты ПИД регулятора пространственного положения по оси X
+KpXPosition: 0
+KiXPosition: 0
+KdXPosition: 0
+# Коэффициенты ПИД регулятора пространственного положения по оси Y
+KpYPosition: 0
+KiYPosition: 0
+KdYPosition: 0
+# Коэффициенты ПИД регулятора пространственного положения по оси Z
+KpZPosition: 0
+KiZPosition: 0
+KdZPosition: 0
+
+# Ограничение значений выхода ПИД-регулятора по угловому положению
+maxCommandAngle: 0
+# Ограничения максимального значения выхода ПИД-регулятора по угловой скорости
+maxCommandAngularRate: 0
+# Ограничения максимального значения выхода ПИД-регулятора по угловому ускорению
+maxCommandAngularAcceleration: 0
+# Ограничение по тяге
+maxThrust: 0
