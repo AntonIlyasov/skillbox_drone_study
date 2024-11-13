@@ -37,9 +37,11 @@ class PID:
         print("dt: ", dt)
         print("_integral: ", self._integral)
         # saturate integral
-        # self._integral = np.clip(self._integral, -self._integral_limit, self._integral_limit)
+        self._integral = np.clip(self._integral, -self._integral_limit, self._integral_limit)
         # Расчет P I  D компонент
         P = self._k_p * error
+        print("self._k_p: ", self._k_p)
+        print("error: ", error)
         print("P: ", P)
         I = self._k_i * self._integral
         print("I: ", I)
@@ -47,7 +49,8 @@ class PID:
         print("D: ", D)
         self._last_error = error
         output = P + I + D
-        print("output: ", output)
+        print("output_before_clip: ", output)
         # Ограничиваем величину выходного значения
-        # output = np.clip(output, self._min_value, self._max_value)
+        output = np.clip(output, self._min_value, self._max_value)
+        print("output: ", output)
         return float(output)

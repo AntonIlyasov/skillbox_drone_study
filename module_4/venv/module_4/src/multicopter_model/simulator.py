@@ -28,15 +28,15 @@ class Simulator:
 
             print("state:")
             print(state)
-            print("roll_rate: ", state[States.ROLL_RATE])
+            print("state[States.Z]: ", state[States.Z])
             print()
 
             self._send_pose_data(state)
             self.time += self.dt
-            tm.sleep(0.01)
+            tm.sleep(self.dt)
 
     def _send_pose_data(self, state):
         # Упаковка и отправка данных о состоянии ЛА для визуализации
         data = bytearray(struct.pack("ddddddddddddd", state[0], state[1], state[2], state[3], state[4],
-                 state[5], state[6], state[7], state[8], state[9], state[10], state[11], self.dt))
+                 state[5], state[6], state[7], state[8], state[9], state[10], state[11], self.time))
         self.udp_socket.sendto(data, self.addr)

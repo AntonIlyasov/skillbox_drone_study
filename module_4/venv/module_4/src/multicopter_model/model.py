@@ -50,19 +50,11 @@ class QuadCopterModel:
 		# Проинтегрируем угловую скорость и обновим угловое положение ЛА
 		self.state_vector[3:6] += self.state_vector[9:12] * dt
 
-	def sign(self, num):
-		return math.copysign(1, num)  # Вернет 1.0 для положительного, -1.0 для отрицательного, 0.0 для нуля
-
 	def _func_right(self, u):
 		# Рассчитаем линейное ускорение
 		print("u: ", u)
 
-		print("self.sign(u[0]): ", self.sign(u[0]))
-		print("self.sign(u[1]): ", self.sign(u[1]))
-		print("self.sign(u[2]): ", self.sign(u[2]))
-		print("self.sign(u[3]): ", self.sign(u[3]))
-		
-		sumRotorsAngularVelocity = self.sign(u[0])*u[0]**2 + self.sign(u[1])*u[1]**2 + self.sign(u[2])*u[2]**2 + self.sign(u[3])*u[3]**2
+		sumRotorsAngularVelocity = u[0]**2 + u[1]**2 + u[2]**2 + u[3]**2
 		print("sumRotorsAngularVelocity: ", sumRotorsAngularVelocity)
 		
 		mass_coeff = 1./self._mass
@@ -86,9 +78,9 @@ class QuadCopterModel:
 		print("linear_acceleration: ", linear_acceleration)
 
 		# Рассчитаем моменты создаваемые двигателями в связной СК
-		self._motor_moments = np.array([self._arm_length*self._trust_coef*(self.sign(u[0])*u[0]**2-self.sign(u[2])*u[2]**2),
-								  		self._arm_length*self._trust_coef*(self.sign(u[3])*u[3]**2-self.sign(u[1])*u[1]**2),
-										self._drag_coef*(self.sign(u[3])*u[3]**2+self.sign(u[1])*u[1]**2-self.sign(u[0])*u[0]**2-self.sign(u[2])*u[2]**2)])
+		self._motor_moments = np.array([self._arm_length * self._trust_coef * (u[0]**2 - u[2]**2),
+								  		self._arm_length * self._trust_coef * (u[3]**2 - u[1]**2),
+										self._drag_coef * (u[3]**2 + u[1]**2 - u[0]**2 - u[2]**2)])
 		
 		print("self._motor_moments: ", self._motor_moments)
 		
@@ -99,7 +91,9 @@ class QuadCopterModel:
 		print("angular_vel: ", angular_vel)	
 				
 		# Рассчитаем угловое ускорение
-		angular_acceleration = self._inertia_inv @ (self._motor_moments - angular_vel @ (self._inertia @ angular_vel))
+		angular_acceleration = self._inertia_inv @ (self._motor_moments - np.cross(angular_vel, self._inertia @ angular_vel, axis=0))
+
+		# (self._motor_moments - angular_vel @ (self._inertia @ angular_vel))
 		print("angular_acceleration: ", angular_acceleration)
 
 		return linear_acceleration, angular_acceleration

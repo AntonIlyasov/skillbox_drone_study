@@ -2,8 +2,8 @@ import numpy as np
 import multicopter_model.constants as cs
 from multicopter_model.constants import FlightMode, States 
 from multicopter_model.pid import PID
-import os
 import time as tm
+import os
 
 class QuadCopterController:
     def __init__(self):
@@ -12,9 +12,9 @@ class QuadCopterController:
         self.y_coeff = []
         self.z_coeff = []
 
-        self.target_x = 50
-        self.target_y = 75
-        self.target_z = 100
+        self.target_x = 0
+        self.target_y = 0
+        self.target_z = 10
         self.target_yaw = 0
         
         self.position_controller_x = PID()
@@ -34,12 +34,12 @@ class QuadCopterController:
         self.yaw_rate_controller = PID()
 
         # Пример простого маршрута
-        # self._mission = [[0, 0, 10 , 0], [0, 10, 10, 1]]
-        self._mission = [[0, 0, 10 , 0]]
+        self._mission = [[0, 0, 10 , 0], [0, 0, 0, 0]]*5
+        # self._mission = [[0, 0, 10 , 0]]
         self._current_mission_index = 0
 
 
-    def set_target_position(self, x, y, z, yaw):
+    def set_target_position(self, x, y, z, yaw):        # вызываем, когда дрон входит в сферу вокруг точки
         self.target_x = x
         self.target_y = y
         self.target_z = z
@@ -73,6 +73,8 @@ class QuadCopterController:
 
 
     def update(self, state_vector, dt, t_cur) -> np.ndarray:
+        # os.system('clear')
+
         # print("\n#######################################################################")
         # print("self.x_coeff: ", self.x_coeff)
         # print("self.y_coeff: ", self.y_coeff)
@@ -91,66 +93,80 @@ class QuadCopterController:
         
         # self.set_target_position(x_des, y_des, z_des, self.target_yaw)
 
+        if ((abs(self._mission[self._current_mission_index][0] - state_vector[States.X])) < 0.3 and \
+            (abs(self._mission[self._current_mission_index][1] - state_vector[States.Y])) < 0.3 and \
+            (abs(self._mission[self._current_mission_index][2] - state_vector[States.Z])) < 0.3):
+            self._current_mission_index += 1
+            self.set_target_position(self._mission[self._current_mission_index][0],
+                                     self._mission[self._current_mission_index][1],
+                                     self._mission[self._current_mission_index][2],
+                                     self._mission[self._current_mission_index][3])
+
+
         # #TODO Расчет целевой скорости ЛА
-        # print("self.target_x: ", self.target_x)
-        # print("self.target_y: ", self.target_y)
-        # print("self.target_z: ", self.target_z)
-        # print("self.target_yaw: ", self.target_yaw)
+        print("self.target_x: ", self.target_x)
+        print("self.target_y: ", self.target_y)
+        print("self.target_z: ", self.target_z)
+        print("self.target_yaw: ", self.target_yaw)
 
         # print("state_vector[States.X]: ", state_vector[States.X])
         # print("state_vector[States.Y]: ", state_vector[States.Y])
         # print("state_vector[States.Z]: ", state_vector[States.Z])
 
-        # vx_des = self.position_controller_x.update(state_vector[States.X], self.target_x, dt)
-        # vy_des = self.position_controller_y.update(state_vector[States.Y], self.target_y, dt)
-        # vz_des = self.position_controller_z.update(state_vector[States.Z], self.target_z, dt)
+        vx_des = self.position_controller_x.update(state_vector[States.X], self.target_x, dt)
+        vy_des = self.position_controller_y.update(state_vector[States.Y], self.target_y, dt)
+        vz_des = self.position_controller_z.update(state_vector[States.Z], self.target_z, dt)
 
-        # print("vx_des: ", vx_des)
-        # print("vy_des: ", vy_des)
-        # print("vz_des: ", vz_des)
+        print("vx_des: ", vx_des)
+        print("vy_des: ", vy_des)
+        print("vz_des: ", vz_des)
 
         # #TODO Расчет тяги и углов крена и тангажа, перепроектирование углов в связную СК
-        # target_roll = self.velocity_controller_x.update(state_vector[States.VX], vx_des, dt)
-        # target_pitch = self.velocity_controller_y.update(state_vector[States.VY], vy_des, dt)
-        # cmd_trust = self.velocity_controller_z.update(state_vector[States.VZ], vz_des, dt)
+        target_roll = self.velocity_controller_x.update(state_vector[States.VX], vx_des, dt)
+        target_pitch = self.velocity_controller_y.update(state_vector[States.VY], vy_des, dt)
+        cmd_trust = self.velocity_controller_z.update(state_vector[States.VZ], vz_des, dt)          # здесь cmd_trust может быть очень маленькое
 
-        # print("target_roll: ", target_roll)
-        # print("target_pitch: ", target_pitch)
-        # print("cmd_trust: ", cmd_trust)
+        print("cmd_trust_before_*scale: ", cmd_trust)
+        cmd_trust *= cs.trust_scale
+
+        cmd_trust = np.clip(cmd_trust, cs.min_rotors_rpm, cs.max_rotors_rpm)
+
+        print("target_roll: ", target_roll)
+        print("target_pitch: ", target_pitch)
+        print("cmd_trust: ", cmd_trust)
         
-        # rot_mat_2d = self._rotation2d(state_vector[States.YAW])
+        rot_mat_2d = self._rotation2d(state_vector[States.YAW])
         
-        # roll_pitch =  rot_mat_2d @ np.array([target_roll, target_pitch])
+        roll_pitch =  rot_mat_2d @ np.array([target_roll, target_pitch])
         # print("roll_pitch: ", roll_pitch)
 
-        # target_roll = roll_pitch[0]
-        # target_pitch = roll_pitch[1]
+        target_roll = roll_pitch[0]
+        target_pitch = roll_pitch[1]
 
         # print("target_roll: ", target_roll)
         # print("target_pitch: ", target_pitch)
         
         # # Пример для контура управления угловым положением и угловой скоростью.
-        # target_roll_rate = self.roll_controller.update(state_vector[States.ROLL], target_roll, dt)
-        # target_pitch_rate = self.pitch_controller.update(state_vector[States.PITCH], target_pitch, dt)
-        # target_yaw_rate = self.yaw_controller.update(state_vector[States.YAW], self.target_yaw, dt)
+        target_roll_rate = self.roll_controller.update(state_vector[States.ROLL], target_roll, dt)
+        target_pitch_rate = self.pitch_controller.update(state_vector[States.PITCH], target_pitch, dt)
+        target_yaw_rate = self.yaw_controller.update(state_vector[States.YAW], self.target_yaw, dt)
 
-        cmd_trust = 0
-        target_roll_rate = 20
-        target_pitch_rate = 0
-        target_yaw_rate = 0
+        # cmd_trust = 5
+        # target_roll_rate = 20
+        # target_pitch_rate = 0
+        # target_yaw_rate = 0
         
-        # os.system('clear')
-        print("target_roll_rate: ", target_roll_rate)
-        print("target_pitch_rate: ", target_pitch_rate)
-        print("target_yaw_rate: ", target_yaw_rate)
+        # print("target_roll_rate: ", target_roll_rate)
+        # print("target_pitch_rate: ", target_pitch_rate)
+        # print("target_yaw_rate: ", target_yaw_rate)
 
         cmd_roll = self.roll_rate_controller.update(state_vector[States.ROLL_RATE], target_roll_rate, dt)
         cmd_pitch = self.pitch_rate_controller.update(state_vector[States.PITCH_RATE], target_pitch_rate, dt)
         cmd_yaw = self.yaw_rate_controller.update(state_vector[States.YAW_RATE], target_yaw_rate, dt)
 
-        print("cmd_roll: ", cmd_roll)
-        print("cmd_pitch: ", cmd_pitch)
-        print("cmd_yaw: ", cmd_yaw)
+        # print("cmd_roll: ", cmd_roll)
+        # print("cmd_pitch: ", cmd_pitch)
+        # print("cmd_yaw: ", cmd_yaw)
 
         u = self._mixer(cmd_trust, cmd_roll, cmd_pitch, cmd_yaw)
         print("u: ", u)
