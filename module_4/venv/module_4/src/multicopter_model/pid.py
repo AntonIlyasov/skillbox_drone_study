@@ -31,26 +31,26 @@ class PID:
     def update(self, input_val: float, target_val: float, dt: float) -> float:
         # Расчет ошибки
         error = target_val - input_val
-        print("error: ", error)
+        # print("error: ", error)
         # Обновление интегрального значения
         self._integral += error * dt
-        print("dt: ", dt)
-        print("_integral: ", self._integral)
+        # print("dt: ", dt)
+        # print("_integral: ", self._integral)
         # saturate integral
         self._integral = np.clip(self._integral, -self._integral_limit, self._integral_limit)
         # Расчет P I  D компонент
         P = self._k_p * error
-        print("self._k_p: ", self._k_p)
-        print("error: ", error)
-        print("P: ", P)
+        # print("self._k_p: ", self._k_p)
+        # print("error: ", error)
+        # print("P: ", P)
         I = self._k_i * self._integral
-        print("I: ", I)
+        # print("I: ", I)
         D = self._k_d * (error - self._last_error) / dt
-        print("D: ", D)
+        # print("D: ", D)
         self._last_error = error
         output = P + I + D
-        print("output_before_clip: ", output)
+        # print("output_before_clip: ", output)
         # Ограничиваем величину выходного значения
         output = np.clip(output, self._min_value, self._max_value)
-        print("output: ", output)
+        # print("output: ", output)
         return float(output)

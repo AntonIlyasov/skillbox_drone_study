@@ -17,18 +17,18 @@ class QuadCopterModel:
 		self._motor_moments = np.array([[0.0], [0.0], [0.0]])
 
 		# Зададим вектор состояния, запишем начальные значения, в данном случае везде нули.
-		self._state_vector = np.array([0.0,  # pose X		0
-		 							   0.0,  # pose Y		1
-									   0.0,  # pose Z		2
-									   0.0,  # roll 		3
-									   0.0,  # pitch 		4
-									   0.0,  # yaw 			5
-									   0.0,  # velocity X	6
-									   0.0,  # velocity Y	7
-									   0.0,  # velocity Z	8
-									   0.0,  # roll rate 	9
-									   0.0,  # pitch rate   10
-									   0.0]) # yaw rate		11
+		self._state_vector = np.array([0.0,  # 0 - X
+		 							   0.0,  # 1 - Y
+									   0.0,  # 2 - Z
+									   0.0,  # 3 - Roll
+									   0.0,  # 4 - Pitch
+									   0.0,  # 5 - Yaw
+									   0.0,  # 6 - VelX
+									   0.0,  # 7 - VelY
+									   0.0,  # 8 - VelZ
+									   0.0,  # 9 - RollRate
+									   0.0,  # 10 - PitchRate
+									   0.0]) # 11 - YawRate
 
 	@property
 	def state_vector(self):

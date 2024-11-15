@@ -28,7 +28,7 @@ class Simulator:
 
             print("state:")
             print(state)
-            print("state[States.Z]: ", state[States.Z])
+            print("States.ROLL_RATE: ", state[States.ROLL_RATE])
             print()
 
             self._send_pose_data(state)

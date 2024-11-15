@@ -4,7 +4,12 @@ import socket
 import struct
 import numpy as np
 import threading
+import argparse
 
+# Создание парсера
+parser = argparse.ArgumentParser(description='Пример программы с аргументами.')
+parser.add_argument('arg1', type=int, help='Первый аргумент')
+args = parser.parse_args()
 
 '''
 Вектор состояния БЛА
@@ -13,13 +18,13 @@ import threading
 1 - Y
 2 - Z
 Скорость ЛА в стартовой СК
-3 - VelX
-4 - VelY
-5 - VelZ
+3 - Roll
+4 - Pitch
+5 - Yaw
 Угловое положение ЛА
-6 - Pitch
-7 - Roll
-8 - Yaw
+6 - VelX
+7 - VelY
+8 - VelZ
 Угловая скорость ЛА
 9 - RollRate
 10 - PitchRate
@@ -30,7 +35,7 @@ import threading
 
 # вносим интересующую переменную вектора состояния сюда
 ########################################################
-index = 2                                            #
+index = args.arg1                                      #
 ########################################################
 
 

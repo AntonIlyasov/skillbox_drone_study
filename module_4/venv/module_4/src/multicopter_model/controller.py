@@ -34,9 +34,14 @@ class QuadCopterController:
         self.yaw_rate_controller = PID()
 
         # Пример простого маршрута
-        self._mission = [[0, 0, 10 , 0], [0, 0, 0, 0]]*5
-        # self._mission = [[0, 0, 10 , 0]]
+        # self._mission = [[5, 5, 5 , 0], [0, 0, 0, 0]]*5
+        self._mission = [[5, 5, 5, 0]]
         self._current_mission_index = 0
+        self.set_target_position(self._mission[self._current_mission_index][0],
+                                    self._mission[self._current_mission_index][1],
+                                    self._mission[self._current_mission_index][2],
+                                    self._mission[self._current_mission_index][3])
+
 
 
     def set_target_position(self, x, y, z, yaw):        # вызываем, когда дрон входит в сферу вокруг точки
@@ -93,14 +98,16 @@ class QuadCopterController:
         
         # self.set_target_position(x_des, y_des, z_des, self.target_yaw)
 
-        if ((abs(self._mission[self._current_mission_index][0] - state_vector[States.X])) < 0.3 and \
-            (abs(self._mission[self._current_mission_index][1] - state_vector[States.Y])) < 0.3 and \
-            (abs(self._mission[self._current_mission_index][2] - state_vector[States.Z])) < 0.3):
-            self._current_mission_index += 1
-            self.set_target_position(self._mission[self._current_mission_index][0],
-                                     self._mission[self._current_mission_index][1],
-                                     self._mission[self._current_mission_index][2],
-                                     self._mission[self._current_mission_index][3])
+        if (len(self._mission) > self._current_mission_index):
+            if ((abs(self._mission[self._current_mission_index][0] - state_vector[States.X])) < 0.3 and \
+                (abs(self._mission[self._current_mission_index][1] - state_vector[States.Y])) < 0.3 and \
+                (abs(self._mission[self._current_mission_index][2] - state_vector[States.Z])) < 0.3):
+                self._current_mission_index += 1
+                if (len(self._mission) > self._current_mission_index):
+                    self.set_target_position(self._mission[self._current_mission_index][0],
+                                            self._mission[self._current_mission_index][1],
+                                            self._mission[self._current_mission_index][2],
+                                            self._mission[self._current_mission_index][3])
 
 
         # #TODO Расчет целевой скорости ЛА
@@ -151,19 +158,27 @@ class QuadCopterController:
         target_pitch_rate = self.pitch_controller.update(state_vector[States.PITCH], target_pitch, dt)
         target_yaw_rate = self.yaw_controller.update(state_vector[States.YAW], self.target_yaw, dt)
 
-        # cmd_trust = 5
-        # target_roll_rate = 20
-        # target_pitch_rate = 0
-        # target_yaw_rate = 0
+        ############################################################################################################################
+        cmd_trust = 500
+        target_roll_rate = 1
+        target_pitch_rate = 1
+        target_yaw_rate = 1
         
-        # print("target_roll_rate: ", target_roll_rate)
-        # print("target_pitch_rate: ", target_pitch_rate)
-        # print("target_yaw_rate: ", target_yaw_rate)
+        print("cmd_trust: ", cmd_trust)
+        print("target_roll_rate: ", target_roll_rate)
+        print("target_pitch_rate: ", target_pitch_rate)
+        print("target_yaw_rate: ", target_yaw_rate)
 
         cmd_roll = self.roll_rate_controller.update(state_vector[States.ROLL_RATE], target_roll_rate, dt)
         cmd_pitch = self.pitch_rate_controller.update(state_vector[States.PITCH_RATE], target_pitch_rate, dt)
         cmd_yaw = self.yaw_rate_controller.update(state_vector[States.YAW_RATE], target_yaw_rate, dt)
 
+        # cmd_trust = 500
+        # cmd_roll  = 10
+        # cmd_pitch = 20
+        # cmd_yaw   = 30
+
+        # print("cmd_trust: ", cmd_trust)
         # print("cmd_roll: ", cmd_roll)
         # print("cmd_pitch: ", cmd_pitch)
         # print("cmd_yaw: ", cmd_yaw)
