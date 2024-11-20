@@ -22,38 +22,38 @@ def main():
 	controller.position_controller_z.integral_limit = 0
 
 	# VELOCITY CONTROLLER
-	controller.velocity_controller_x.set_pid_gains(0.01, 0, 0)
+	controller.velocity_controller_x.set_pid_gains(0.1, 1, 0)
 	controller.velocity_controller_x.set_saturation_limit(-0.5, 0.5)
-	controller.velocity_controller_x.integral_limit = 1.0
+	controller.velocity_controller_x.integral_limit = 0.0
 
-	controller.velocity_controller_y.set_pid_gains(0.01, 0, 0)
+	controller.velocity_controller_y.set_pid_gains(0.1, 1, 0)
 	controller.velocity_controller_y.set_saturation_limit(-0.5, 0.5)
-	controller.velocity_controller_y.integral_limit = 1.0
+	controller.velocity_controller_y.integral_limit = 0.0
 
-	controller.velocity_controller_z.set_pid_gains(3, 0, 0)
-	controller.velocity_controller_z.set_saturation_limit(-10, 10)
+	controller.velocity_controller_z.set_pid_gains(50, 0, 0)
+	controller.velocity_controller_z.set_saturation_limit(-25, 25)
 	controller.velocity_controller_z.integral_limit = 0.0
 
 	# ANGLE CONTROLLER
-	controller.pitch_controller.set_pid_gains(4, 0, 0)
+	controller.roll_controller.set_pid_gains(4, 1, 1)
+	controller.roll_controller.set_saturation_limit(-5, 5)
+	controller.roll_controller.integral_limit = 0.0
+      
+	controller.pitch_controller.set_pid_gains(4, 0, 1)
 	controller.pitch_controller.set_saturation_limit(-5, 5)
 	controller.pitch_controller.integral_limit = 0.0
 
-	controller.roll_controller.set_pid_gains(4, 0, 0)
-	controller.roll_controller.set_saturation_limit(-5, 5)
-	controller.roll_controller.integral_limit = 0.0
-
-	controller.yaw_controller.set_pid_gains(1, 0, 0)
-	controller.yaw_controller.set_saturation_limit(-1, 1)
+	controller.yaw_controller.set_pid_gains(4, 0, 0.5)
+	controller.yaw_controller.set_saturation_limit(-5, 5)
 	controller.yaw_controller.integral_limit = 0.0
 
 	# ANGULAR RATE CONTROLLER
-	controller.roll_rate_controller.set_pid_gains(300, 0, 10)
-	controller.roll_rate_controller.set_saturation_limit(-300, 300)
+	controller.roll_rate_controller.set_pid_gains(150, 0, 0)
+	controller.roll_rate_controller.set_saturation_limit(-150, 150)
 	controller.roll_rate_controller.integral_limit = 0.0
 
-	controller.pitch_rate_controller.set_pid_gains(300, 0, 10)
-	controller.pitch_rate_controller.set_saturation_limit(-300, 300)
+	controller.pitch_rate_controller.set_pid_gains(150, 0, 0)
+	controller.pitch_rate_controller.set_saturation_limit(-150, 150)
 	controller.pitch_rate_controller.integral_limit = 0.0
 
 	controller.yaw_rate_controller.set_pid_gains(50, 0, 0)
