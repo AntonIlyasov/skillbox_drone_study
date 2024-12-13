@@ -1,0 +1,12 @@
+README.md
+setup.py
+src/multicopter_model/__init__.py
+src/multicopter_model/constants.py
+src/multicopter_model/controller.py
+src/multicopter_model/model.py
+src/multicopter_model/pid.py
+src/multicopter_model/simulator.py
+src/multicopter_model.egg-info/PKG-INFO
+src/multicopter_model.egg-info/SOURCES.txt
+src/multicopter_model.egg-info/dependency_links.txt
+src/multicopter_model.egg-info/top_level.txt
